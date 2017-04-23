@@ -182,7 +182,6 @@ func reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
 }
 
 func plusOne(userId string) error {
-    fmt.Println("+1: " + userId)
     _, err := pool.Get().Do("INCR", userId)
     if err != nil {
         fmt.Println("Error incrementing karma:", err)
@@ -191,7 +190,6 @@ func plusOne(userId string) error {
 }
 
 func minusOne(userId string) error {
-    fmt.Println("-1: " + userId)
     _, err := pool.Get().Do("DECR", userId)
     if err != nil {
         fmt.Println("Error decrementing karma:", err)
