@@ -72,7 +72,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
         if len(mentions) < 2 {
             if len(mentions) == 0 {
                 karma, err := getKarma(ev.Author)
-                if err != nil {
+                if err != nil && err != redis.ErrNil {
                     fmt.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `" + err.Error() + "`")
                     return
@@ -82,7 +82,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
             } else { // len is 1
                 user := mentions[0]
                 karma, err := getKarma(mentions[0])
-                if err != nil {
+                if err != nil && err != redis.ErrNil {
                     fmt.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `" + err.Error() + "`")
                     return
@@ -93,7 +93,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
 
         } else {
             karmas, err := getKarmaMulti(mentions...)
-            if err != nil {
+            if err != nil && err != redis.ErrNil {
                 fmt.Println("Error getting karma:", err)
                 s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `" + err.Error() + "`")
                 return
