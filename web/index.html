@@ -1,13 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>test website</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <style>
+        body {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            text-align: center;
+            background-color: lightskyblue;
+            color: black;
+            font-family: 'Lato', sans-serif;
+        }
+        button {
+            position: relative;
+            top: 100px;
+            cursor: pointer;
+            background-color: dodgerblue;
+            border: 2px solid darkblue;
+            border-radius: 5px;
+            width: 200px;
+            height: 50px;
+            font-family: 'Lato', sans-serif;
+            font-weight: bolder;
+            font-size: 24px;
+        }
+        button:hover {
+            background-color: skyblue;
+        }
+        #footer {
+            position: absolute;
+            width: 100%;
+            bottom: 5px;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            button = document.querySelector("#button");
+            link = document.querySelector("#link");
+
+            button.onclick = function (ev) {
+                link.click(ev)
+            }
+        }
+    </script>
 </head>
 <body>
-<h1>Just a quick test website for karman</h1>
-<p>Hey look it works</p>
-<a href="https://discordapp.com/api/oauth2/authorize?client_id=305486631857684492&scope=bot&permissions=67111936" target="_blank">
-    Click here to add the bot
-</a>
+<h1>Karman</h1>
+<p>Karma Tracker Bot for Discord</p>
+<button id="button">Add Karman</button>
+<a href="https://discordapp.com/api/oauth2/authorize?client_id=305486631857684492&scope=bot&permissions=67111936"
+   target="_blank" id="link"></a>
+<p id="footer">Disclaimer: The website is trash because I don't do web design. If ya want, feel free to
+    <a href="https://github.com/Deanveloper/Karman">contribute</a></p>
 </body>
 </html>
