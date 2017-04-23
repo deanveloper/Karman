@@ -9,6 +9,7 @@ import (
 )
 
 var pool *redis.Pool
+var session *discordgo.Session
 
 func StartBotService() {
     dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
@@ -22,6 +23,7 @@ func StartBotService() {
     dg.AddHandler(reactionAdd)
     dg.AddHandler(reactionRemove)
     dg.AddHandler(handleCommand)
+    session = dg
 
     pool = &redis.Pool{
         MaxIdle: 80,
@@ -176,4 +178,8 @@ func minusOne(userId string) error {
         fmt.Println("Error decrementing karma:", err)
     }
     return err
+}
+
+func onKill() {
+    session.UserUpdateStatus(discordgo.StatusOffline)
 }
