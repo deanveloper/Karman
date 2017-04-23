@@ -122,7 +122,6 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
 
 func getKarma(user *discordgo.User) (int, error) {
     c := pool.Get()
-    fmt.Println("Connection created")
 
     defer func() {
         err := c.Close()
@@ -130,7 +129,6 @@ func getKarma(user *discordgo.User) (int, error) {
             fmt.Println("Error closing connection for getKarma(" + user.Username + ")")
             fmt.Println(err)
         }
-        fmt.Println("Connection closed")
     }()
 
     rawReply, err := c.Do("GET", user.ID)
@@ -143,7 +141,6 @@ func getKarma(user *discordgo.User) (int, error) {
 
 func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
     c := pool.Get()
-    fmt.Println("Connection created")
 
     defer func() {
         err := c.Close()
@@ -151,7 +148,6 @@ func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
             fmt.Printf("Error closing connection for getKarmaMulti(%q)", users)
             fmt.Println(err)
         }
-        fmt.Println("Connection closed")
     }()
 
     ids := make([]interface{}, len(users))
@@ -209,7 +205,6 @@ func reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
 
 func plusOne(userId string) error {
     c := pool.Get()
-    fmt.Println("Connection created")
 
     defer func() {
         err := c.Close()
@@ -217,7 +212,6 @@ func plusOne(userId string) error {
             fmt.Println("Error closing connection for plusOne(" + userId + ")")
             fmt.Println(err)
         }
-        fmt.Println("Connection closed")
     }()
 
     _, err := c.Do("INCR", userId)
@@ -229,7 +223,6 @@ func plusOne(userId string) error {
 
 func minusOne(userId string) error {
     c := pool.Get()
-    fmt.Println("Connection created")
 
     defer func() {
         err := c.Close()
@@ -237,7 +230,6 @@ func minusOne(userId string) error {
             fmt.Println("Error closing connection for getKarma(" + userId + ")")
             fmt.Println(err)
         }
-        fmt.Println("Connection closed")
     }()
 
     _, err := c.Do("DECR", userId)
