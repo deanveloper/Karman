@@ -12,7 +12,6 @@ func main() {
 
     // c from bot.go
     defer pool.Close()
-    defer onKill()
 
     // just keep it running until force closed
     sigChan := make(chan os.Signal)
@@ -21,5 +20,5 @@ func main() {
     // wait for SIGINT or SIGTERM
     <-sigChan
 
-    // at this point, pool.Close() and onKill() will be called (as they were deferred)
+    // at this point, pool.Close() will be called (as it was deferred)
 }

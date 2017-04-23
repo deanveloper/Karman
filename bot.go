@@ -49,11 +49,7 @@ func StartBotService() {
 }
 
 func ready(s *discordgo.Session, ev *discordgo.Ready) {
-    _, err := s.UserUpdateStatus(discordgo.StatusOnline)
-    if err != nil {
-        fmt.Println("Error while readying:", err)
-    }
-    err = s.UpdateStatus(0, "Karma Counter")
+    err := s.UpdateStatus(0, "Karma Counter")
     if err != nil {
         fmt.Println("Error while readying:", err)
     }
@@ -190,8 +186,4 @@ func minusOne(userId string) error {
         fmt.Println("Error decrementing karma:", err)
     }
     return err
-}
-
-func onKill() {
-    session.UserUpdateStatus(discordgo.StatusOffline)
 }
