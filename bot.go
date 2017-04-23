@@ -4,8 +4,10 @@ import (
     "fmt"
     "github.com/bwmarrin/discordgo"
     "github.com/garyburd/redigo/redis"
+    "github.com/pkg/errors"
     "os"
     "strings"
+    "time"
 )
 
 var pool *redis.Pool
@@ -24,7 +26,7 @@ func StartBotService() {
     dg.AddHandler(handleCommand)
 
     pool = &redis.Pool{
-        MaxIdle: 80,
+        MaxIdle:   80,
         MaxActive: 5, // max number of connections
         Dial: func() (redis.Conn, error) {
             c, err := redis.DialURL(os.Getenv("REDIS_URL"))
@@ -32,6 +34,18 @@ func StartBotService() {
                 return nil, err
             }
             return c, nil
+        },
+        TestOnBorrow: func(c redis.Conn, t time.Time) error {
+            reply, err := redis.String(c.Do("PING"))
+
+            if err {
+                return err
+            }
+            if reply != "PONG" {
+                return errors.New("Response was not PONG")
+            }
+
+            return nil
         },
     }
 
@@ -54,9 +68,9 @@ func ready(s *discordgo.Session, ev *discordgo.Ready) {
 }
 
 func guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
-    _, err := s.Request("PATCH", discordgo.EndpointGuildMembers(ev.ID) + "/@me/nick", struct{nick string}{"Karman"})
+    _, err := s.Request("PATCH", discordgo.EndpointGuildMembers(ev.ID)+"/@me/nick", struct{ nick string }{"Karman"})
     if err != nil {
-        fmt.Println("Error while joining guild " + ev.Name + ":", err)
+        fmt.Println("Error while joining guild "+ev.Name+":", err)
     }
 }
 
@@ -72,9 +86,9 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
         if len(mentions) < 2 {
             if len(mentions) == 0 {
                 karma, err := getKarma(ev.Author)
-                if err != nil && err != redis.ErrNil {
+                if err != nil {
                     fmt.Println("Error getting karma:", err)
-                    s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `" + err.Error() + "`")
+                    s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
                     return
                 }
 
@@ -82,9 +96,9 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
             } else { // len is 1
                 user := mentions[0]
                 karma, err := getKarma(mentions[0])
-                if err != nil && err != redis.ErrNil {
+                if err != nil {
                     fmt.Println("Error getting karma:", err)
-                    s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `" + err.Error() + "`")
+                    s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
                     return
                 }
 
@@ -93,9 +107,9 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
 
         } else {
             karmas, err := getKarmaMulti(mentions...)
-            if err != nil && err != redis.ErrNil {
+            if err != nil {
                 fmt.Println("Error getting karma:", err)
-                s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `" + err.Error() + "`")
+                s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
                 return
             }
 
@@ -112,6 +126,9 @@ func getKarma(user *discordgo.User) (int, error) {
 
     rawReply, err := pool.Get().Do("GET", user.ID)
 
+    if err == redis.ErrNil {
+        return 0, nil
+    }
     return redis.Int(rawReply, err)
 }
 
@@ -128,9 +145,12 @@ func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
         return nil, err
     }
 
-    reply, err := redis.Ints(rawReply, err)
-
     karmas := make(map[*discordgo.User]int)
+    reply, err := redis.Ints(rawReply, err)
+    if err == redis.ErrNil {
+        return karmas, nil
+    }
+
     for index, user := range users {
         karmas[user] = reply[index]
     }
