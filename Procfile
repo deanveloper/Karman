@@ -1,1 +1,1 @@
-web: karman
+bot: karman

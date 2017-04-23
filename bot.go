@@ -6,13 +6,15 @@ import (
     "github.com/bwmarrin/discordgo"
     "github.com/garyburd/redigo/redis"
     "os"
+    "os/signal"
     "strings"
+    "syscall"
     "time"
 )
 
 var pool *redis.Pool
 
-func StartBotService() {
+func main() {
     dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
     if err != nil {
         fmt.Println("Error creating session!", err)
@@ -49,6 +51,8 @@ func StartBotService() {
         },
     }
 
+    defer pool.Close()
+
     if err != nil {
         fmt.Println("Error connecting to redis:", err)
         return
@@ -58,6 +62,14 @@ func StartBotService() {
     if err != nil {
         fmt.Println("Error starting websocket:", err)
     }
+
+
+    // just keep it running until force closed
+    sigChan := make(chan os.Signal)
+    signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+    // wait for SIGINT or SIGTERM
+    <-sigChan
 }
 
 func ready(s *discordgo.Session, ev *discordgo.Ready) {
