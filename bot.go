@@ -9,7 +9,6 @@ import (
 )
 
 var pool *redis.Pool
-var session *discordgo.Session
 
 func StartBotService() {
     dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
@@ -23,7 +22,6 @@ func StartBotService() {
     dg.AddHandler(reactionAdd)
     dg.AddHandler(reactionRemove)
     dg.AddHandler(handleCommand)
-    session = dg
 
     pool = &redis.Pool{
         MaxIdle: 80,
