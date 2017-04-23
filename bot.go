@@ -73,7 +73,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
                     return
                 }
 
-                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("You have **%s** karma", karma))
+                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("You have **%d** karma", karma))
             } else { // len is 1
                 user := mentions[0]
                 karma, err := getKarma(mentions[0])
@@ -83,7 +83,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
                     return
                 }
 
-                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%s** karma", user.Username, karma))
+                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
             }
 
         } else {
@@ -95,7 +95,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
             }
 
             for user, karma := range karmas {
-                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%s** karma", user.Username, karma))
+                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
             }
         }
     }
