@@ -114,24 +114,23 @@ func getKarma(user *discordgo.User) (string, error) {
         return "0", nil
     }
 
-    asArray, ok := rawReply.([]interface{})
+    asArray, ok := rawReply.([]byte)
     if ok {
         fmt.Println("Got as an array: " + fmt.Sprint(asArray))
         return fmt.Sprint(asArray[0]), nil
     } else {
-        fmt.Printf("Not an array, but %T %s", rawReply, fmt.Sprint(rawReply))
+        fmt.Printf("Not a byte array, but %T %s\n", rawReply, fmt.Sprint(rawReply))
         return fmt.Sprint(rawReply), nil
     }
 }
 
 func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]string, error) {
 
-    c := pool.Get()
-    c.Send("MULTI")
-    for _, user := range users {
-        c.Send("GET", user.ID)
+    ids := make([]string, len(users))
+    for i, user := range users {
+        ids[i] = user.ID
     }
-    rawReply, err := c.Do("EXEC")
+    rawReply, err := pool.Get().Do("MGET", ids...)
     if err != nil {
         return nil, err
     }
