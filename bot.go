@@ -101,16 +101,16 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
     }
 }
 
-func getKarma(user *discordgo.User) (int64, error) {
+func getKarma(user *discordgo.User) (int, error) {
     c := pool.Get()
     defer c.Close()
 
     rawReply, err := pool.Get().Do("GET", user.ID)
 
-    return redis.Int64(rawReply, err)
+    return redis.Int(rawReply, err)
 }
 
-func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int64, error) {
+func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
 
     ids := make([]interface{}, len(users))
     for i, user := range users {
@@ -121,10 +121,9 @@ func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int64, error)
         return nil, err
     }
 
-    intsReply, err := redis.Ints(rawReply, err)
-    reply := []int64(intsReply)
+    reply, err := redis.Ints(rawReply, err)
 
-    karmas := make(map[*discordgo.User]int64)
+    karmas := make(map[*discordgo.User]int)
     for index, user := range users {
         karmas[user] = reply[index]
     }
