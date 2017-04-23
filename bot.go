@@ -62,6 +62,11 @@ func guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
 
 func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
     if strings.HasPrefix(strings.ToLower(ev.Content), "!karma") {
+        if ev.MentionEveryone {
+            s.ChannelMessageSend(ev.ChannelID, "Sorry, you can't do that.")
+            return
+        }
+
         mentions := ev.Mentions
 
         if len(mentions) < 2 {
