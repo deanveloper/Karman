@@ -146,7 +146,6 @@ func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]string, error
         }
     }
     return karmas, nil
-
 }
 
 func reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
