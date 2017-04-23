@@ -117,12 +117,14 @@ func getKarma(user *discordgo.User) (int, error) {
 }
 
 func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
+    c := pool.Get()
+    defer c.Close()
 
     ids := make([]interface{}, len(users))
     for i, user := range users {
         ids[i] = user.ID
     }
-    rawReply, err := pool.Get().Do("MGET", ids...)
+    rawReply, err := c.Do("MGET", ids...)
     if err != nil {
         return nil, err
     }
@@ -169,7 +171,10 @@ func reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
 }
 
 func plusOne(userId string) error {
-    _, err := pool.Get().Do("INCR", userId)
+    c := pool.Get()
+    defer c.Close()
+
+    _, err := c.Do("INCR", userId)
     if err != nil {
         fmt.Println("Error incrementing karma:", err)
     }
@@ -177,7 +182,10 @@ func plusOne(userId string) error {
 }
 
 func minusOne(userId string) error {
-    _, err := pool.Get().Do("DECR", userId)
+    c := pool.Get()
+    defer c.Close()
+
+    _, err := c.Do("DECR", userId)
     if err != nil {
         fmt.Println("Error decrementing karma:", err)
     }
