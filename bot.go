@@ -38,7 +38,7 @@ func StartBotService() {
         TestOnBorrow: func(c redis.Conn, t time.Time) error {
             reply, err := redis.String(c.Do("PING"))
 
-            if err {
+            if err != nil {
                 return err
             }
             if reply != "PONG" {
