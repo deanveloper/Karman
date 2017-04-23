@@ -133,7 +133,7 @@ func getKarma(user *discordgo.User) (int, error) {
         fmt.Println("Connection closed")
     }()
 
-    rawReply, err := pool.Get().Do("GET", user.ID)
+    rawReply, err := c.Do("GET", user.ID)
 
     if err == redis.ErrNil {
         return 0, nil
