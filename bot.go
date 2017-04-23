@@ -113,8 +113,10 @@ func getKarma(user *discordgo.User) (string, error) {
 
     asArray, ok := rawReply.([]interface{})
     if ok {
+        fmt.Println("Got as an array: " + fmt.Sprint(asArray))
         return fmt.Sprint(asArray[0]), nil
     } else {
+        fmt.Printf("Not an array, but %T %s", rawReply, fmt.Sprint(rawReply))
         return fmt.Sprint(rawReply), nil
     }
 }
