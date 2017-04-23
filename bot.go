@@ -49,7 +49,11 @@ func StartBotService() {
 }
 
 func ready(s *discordgo.Session, ev *discordgo.Ready) {
-    err := s.UpdateStatus(0, "Karma Counter")
+    _, err := s.UserUpdateStatus(discordgo.StatusOnline)
+    if err != nil {
+        fmt.Println("Error while readying:", err)
+    }
+    err = s.UpdateStatus(0, "Karma Counter")
     if err != nil {
         fmt.Println("Error while readying:", err)
     }
