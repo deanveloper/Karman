@@ -1,10 +1,10 @@
 package main
 
 import (
+    "errors"
     "fmt"
     "github.com/bwmarrin/discordgo"
     "github.com/garyburd/redigo/redis"
-    "github.com/pkg/errors"
     "os"
     "strings"
     "time"
