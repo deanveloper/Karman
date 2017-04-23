@@ -125,7 +125,11 @@ func getKarma(user *discordgo.User) (int, error) {
     fmt.Println("Connection created")
 
     defer func() {
-        c.Close()
+        err := c.Close()
+        if err != nil {
+            fmt.Println("Error closing connection for getKarma(" + user.Username + ")")
+            fmt.Println(err)
+        }
         fmt.Println("Connection closed")
     }()
 
@@ -142,7 +146,11 @@ func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
     fmt.Println("Connection created")
 
     defer func() {
-        c.Close()
+        err := c.Close()
+        if err != nil {
+            fmt.Printf("Error closing connection for getKarmaMulti(%q)", users)
+            fmt.Println(err)
+        }
         fmt.Println("Connection closed")
     }()
 
@@ -204,7 +212,11 @@ func plusOne(userId string) error {
     fmt.Println("Connection created")
 
     defer func() {
-        c.Close()
+        err := c.Close()
+        if err != nil {
+            fmt.Println("Error closing connection for plusOne(" + userId + ")")
+            fmt.Println(err)
+        }
         fmt.Println("Connection closed")
     }()
 
@@ -220,7 +232,11 @@ func minusOne(userId string) error {
     fmt.Println("Connection created")
 
     defer func() {
-        c.Close()
+        err := c.Close()
+        if err != nil {
+            fmt.Println("Error closing connection for getKarma(" + userId + ")")
+            fmt.Println(err)
+        }
         fmt.Println("Connection closed")
     }()
 
