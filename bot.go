@@ -103,6 +103,9 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
 
 func getKarma(user *discordgo.User) (string, error) {
     rawReply, err := pool.Get().Do("GET", user.ID)
+
+    fmt.Println("Getting karma for", user.Username)
+
     if err != nil {
         return "0", err
     }
