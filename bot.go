@@ -126,7 +126,7 @@ func getKarma(user *discordgo.User) (string, error) {
 
 func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]string, error) {
 
-    ids := make([]string, len(users))
+    ids := make([]interface{}, len(users))
     for i, user := range users {
         ids[i] = user.ID
     }
