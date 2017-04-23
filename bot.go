@@ -131,12 +131,12 @@ func getKarma(user *discordgo.User) (int, error) {
         }
     }()
 
-    rawReply, err := c.Do("GET", user.ID)
+    reply, err := redis.Int(c.Do("GET", user.ID))
 
     if err == redis.ErrNil {
         return 0, nil
     }
-    return redis.Int(rawReply, err)
+    return reply, err
 }
 
 func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
@@ -154,15 +154,13 @@ func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
     for i, user := range users {
         ids[i] = user.ID
     }
-    rawReply, err := c.Do("MGET", ids...)
-    if err != nil {
-        return nil, err
-    }
-
+    reply, err := redis.Ints(c.Do("MGET", ids...))
     karmas := make(map[*discordgo.User]int)
-    reply, err := redis.Ints(rawReply, err)
     if err == redis.ErrNil {
         return karmas, nil
+    }
+    if err != nil {
+        return nil, err
     }
 
     for index, user := range users {
