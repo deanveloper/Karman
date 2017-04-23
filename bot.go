@@ -101,30 +101,16 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
     }
 }
 
-func getKarma(user *discordgo.User) (string, error) {
+func getKarma(user *discordgo.User) (int64, error) {
+    c := pool.Get()
+    defer c.Close()
+
     rawReply, err := pool.Get().Do("GET", user.ID)
 
-    fmt.Println("Getting karma for", user.Username)
-
-    if err != nil {
-        return "0", err
-    }
-
-    if rawReply == nil {
-        return "0", nil
-    }
-
-    asArray, ok := rawReply.([]byte)
-    if ok {
-        fmt.Println("Got as an array: " + fmt.Sprint(asArray))
-        return fmt.Sprint(asArray[0]), nil
-    } else {
-        fmt.Printf("Not a byte array, but %T %s\n", rawReply, fmt.Sprint(rawReply))
-        return fmt.Sprint(rawReply), nil
-    }
+    return redis.Int64(rawReply, err)
 }
 
-func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]string, error) {
+func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int64, error) {
 
     ids := make([]interface{}, len(users))
     for i, user := range users {
@@ -135,19 +121,12 @@ func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]string, error
         return nil, err
     }
 
-    karmas := make(map[*discordgo.User]string)
+    intsReply, err := redis.Ints(rawReply, err)
+    reply := []int64(intsReply)
+
+    karmas := make(map[*discordgo.User]int64)
     for index, user := range users {
-        value := rawReply.([]interface{})[index]
-        if value == nil {
-            karmas[user] = "0"
-        } else {
-            asArray, ok := value.([]interface{})
-            if ok {
-                karmas[user] = fmt.Sprint(asArray[0])
-            } else {
-                karmas[user] = fmt.Sprint(value)
-            }
-        }
+        karmas[user] = reply[index]
     }
     return karmas, nil
 }
