@@ -16,6 +16,7 @@
             color: black;
             font-family: 'Lato', sans-serif;
         }
+
         button {
             position: relative;
             top: 100px;
@@ -29,9 +30,11 @@
             font-weight: bolder;
             font-size: 24px;
         }
+
         button:hover {
             background-color: skyblue;
         }
+
         #footer {
             position: absolute;
             width: 100%;
@@ -39,7 +42,7 @@
         }
     </style>
     <script>
-        window.onload = function() {
+        window.onload = function () {
             button = document.querySelector("#button");
             link = document.querySelector("#link");
 
@@ -52,7 +55,10 @@
 <body>
 <h1>Karman</h1>
 <p>Karma Tracker Bot for Discord</p>
-<p>Upvote/Downvote posts with the ⬆️ (:arrow_up:) and ⬇️ (:arrow_down:) reactions!</p>
+<p>
+    <b>Upvote</b> and <b>downvote</b> posts with the ⬆️ (<code>:arrow_up:</code>)
+    and ⬇️ (<code>:arrow_down:</code>) reactions!
+</p>
 <button id="button">Add Karman</button>
 <a href="https://discordapp.com/api/oauth2/authorize?client_id=305486631857684492&scope=bot&permissions=67111936"
    target="_blank" id="link"></a>
