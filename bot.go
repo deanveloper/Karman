@@ -9,22 +9,28 @@ import (
     "time"
 )
 
-var pool *redis.Pool
+type OurBot struct {
+    pool *redis.Pool
+}
 
-func start() *redis.Pool {
+func New() *OurBot {
+    return &OurBot{}
+}
+
+func (b *OurBot) Start() {
     dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
     if err != nil {
         fmt.Println("Error creating session!", err)
-        return nil
+        return
     }
 
-    dg.AddHandler(ready)
-    dg.AddHandler(guildCreate)
-    dg.AddHandler(reactionAdd)
-    dg.AddHandler(reactionRemove)
-    dg.AddHandler(handleCommand)
+    dg.AddHandler(b.ready)
+    dg.AddHandler(b.guildCreate)
+    dg.AddHandler(b.reactionAdd)
+    dg.AddHandler(b.reactionRemove)
+    dg.AddHandler(b.handleCommand)
 
-    pool = &redis.Pool{
+    b.pool = &redis.Pool{
         MaxIdle:   80,
         MaxActive: 5, // max number of connections
         Dial: func() (redis.Conn, error) {
@@ -50,14 +56,15 @@ func start() *redis.Pool {
 
     if err != nil {
         fmt.Println("Error connecting to redis:", err)
-        return nil
+        return
     }
 
     err = dg.Open()
     if err != nil {
         fmt.Println("Error starting websocket:", err)
     }
+}
 
-    // pool closed by main method
-    return pool
+func (b *OurBot) Close() {
+    b.pool.Close()
 }

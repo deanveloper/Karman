@@ -6,8 +6,8 @@ import (
     "github.com/garyburd/redigo/redis"
 )
 
-func plusOne(userId string) error {
-    c := pool.Get()
+func (b *OurBot) plusOne(userId string) error {
+    c := b.pool.Get()
 
     defer func() {
         err := c.Close()
@@ -24,8 +24,8 @@ func plusOne(userId string) error {
     return err
 }
 
-func minusOne(userId string) error {
-    c := pool.Get()
+func (b *OurBot) minusOne(userId string) error {
+    c := b.pool.Get()
 
     defer func() {
         err := c.Close()
@@ -42,8 +42,8 @@ func minusOne(userId string) error {
     return err
 }
 
-func getKarma(user *discordgo.User) (int, error) {
-    c := pool.Get()
+func (b *OurBot) getKarma(user *discordgo.User) (int, error) {
+    c := b.pool.Get()
 
     defer func() {
         err := c.Close()
@@ -61,8 +61,8 @@ func getKarma(user *discordgo.User) (int, error) {
     return reply, err
 }
 
-func getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
-    c := pool.Get()
+func (b *OurBot) getKarmaMulti(users ... *discordgo.User) (map[*discordgo.User]int, error) {
+    c := b.pool.Get()
 
     defer func() {
         err := c.Close()
