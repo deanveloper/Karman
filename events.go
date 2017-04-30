@@ -4,6 +4,7 @@ import (
     "fmt"
     "github.com/bwmarrin/discordgo"
     "strings"
+    "time"
 )
 
 func (b *OurBot) ready(s *discordgo.Session, ev *discordgo.Ready) {
@@ -23,14 +24,14 @@ func (b *OurBot) guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
 func (b *OurBot) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
     if strings.HasPrefix(strings.ToLower(ev.Content), "!karma") {
         if ev.MentionEveryone {
-            s.ChannelMessageSend(ev.ChannelID, "Sorry, you can't do that.")
+            s.ChannelMessageSend(ev.ChannelID, "Getting everyone's karma is not allowed.")
             return
         }
 
         mentions := ev.Mentions
 
         if len(mentions) < 2 {
-            if len(mentions) == 0 {
+            if len(mentions) == 0 { // if someone was mentioned
                 karma, err := b.getKarma(ev.Author)
                 if err != nil {
                     fmt.Println("Error getting karma:", err)
@@ -39,7 +40,8 @@ func (b *OurBot) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
                 }
 
                 s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("You have **%d** karma", karma))
-            } else { // len is 1
+
+            } else {
                 user := mentions[0]
                 karma, err := b.getKarma(mentions[0])
                 if err != nil {
@@ -51,16 +53,27 @@ func (b *OurBot) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
                 s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
             }
 
-        } else {
-            karmas, err := b.getKarmaMulti(mentions...)
-            if err != nil {
-                fmt.Println("Error getting karma:", err)
-                s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
-                return
-            }
+        } else { // if multiple people were mentioned
+            for _, user := range mentions {
+                timeout := time.After(5 * time.Second)
+                go func() {
+                    karma, err := b.getKarma(mentions[0])
 
-            for user, karma := range karmas {
-                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
+                    if err != nil {
+                        fmt.Println("Error getting karma for", user.Username, ":", err)
+                        s.ChannelMessageSend(ev.ChannelID, "Error getting karma for "+user.Username+": `"+err.Error()+"`")
+                        return
+                    }
+
+                    s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
+
+                    timeout <- time.Time{}
+                }()
+
+                if <-timeout != (time.Time{}) {
+                    s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("Took too long to get **%s**'s karma", user.Username))
+                    return
+                }
             }
         }
     }
