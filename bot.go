@@ -2,12 +2,10 @@ package main
 
 import (
     "fmt"
-    "github.com/aws/aws-sdk-go/aws"
     "github.com/aws/aws-sdk-go/aws/session"
     "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
     "os"
-    "github.com/aws/aws-sdk-go/aws/credentials"
 )
 
 type OurBot struct {
@@ -46,10 +44,7 @@ func (b *OurBot) Start() {
         return
     }
 
-    if err != nil {
-        fmt.Println("Error connecting to redis:", err)
-        return
-    }
+    fmt.Println("Successfully connected to DynamoDB!")
 
     dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
     if err != nil {
@@ -68,6 +63,7 @@ func (b *OurBot) Start() {
     if err != nil {
         fmt.Println("Error starting websocket:", err)
     }
+    fmt.Println("Successfully connected to Discord!")
 }
 
 func (b *OurBot) Close() {
