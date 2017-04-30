@@ -55,8 +55,6 @@ func Start() {
         return
     }
 
-    fmt.Println(url.QueryEscape(string(dat)))
-
     // start discord stuff
     dg.AddHandler(ready)
     dg.AddHandler(guildCreate)
