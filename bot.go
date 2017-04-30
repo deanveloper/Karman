@@ -7,6 +7,8 @@ import (
     "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
     "io/ioutil"
+    "os"
+    "path"
 )
 
 var table *dynamo.Table
@@ -41,7 +43,7 @@ func Start() {
     }
     fmt.Println("Successfully connected to DynamoDB!")
 
-    dat, err := ioutil.ReadFile("~/KARMAN_SECRET")
+    dat, err := ioutil.ReadFile(path.Join(os.Getenv("HOME"), "KARMAN_SECRET"))
     if err != nil {
         fmt.Println("Error reading secret key!", err)
         return
