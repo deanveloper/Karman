@@ -29,8 +29,9 @@ func (b *OurBot) Start() {
         fmt.Println("Error connecting to DB:", err)
         return
     }
-
-    b.table = &dynamo.New(sess).Table("Karma")
+    var temp interface{}
+    temp = dynamo.New(sess).Table("Karma")
+    b.table = &temp.(dynamo.Table)
 
     test := User{}
     err = b.table.Get("user", "test").One(&test)

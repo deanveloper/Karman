@@ -4,7 +4,6 @@ import (
     "fmt"
     "github.com/bwmarrin/discordgo"
     "strings"
-    "time"
 )
 
 func (b *OurBot) ready(s *discordgo.Session, ev *discordgo.Ready) {
@@ -55,7 +54,7 @@ func (b *OurBot) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
 
         } else { // if multiple people were mentioned
             for _, user := range mentions {
-                timeout := time.After(5 * time.Second)
+                // get each one asynchronously
                 go func() {
                     karma, err := b.getKarma(mentions[0])
 
@@ -66,14 +65,7 @@ func (b *OurBot) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
                     }
 
                     s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
-
-                    timeout <- time.Time{}
                 }()
-
-                if <-timeout != (time.Time{}) {
-                    s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("Took too long to get **%s**'s karma", user.Username))
-                    return
-                }
             }
         }
     }
