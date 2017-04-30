@@ -57,6 +57,7 @@ func Start() {
     err = dg.Open()
     if err != nil {
         fmt.Println("Error starting websocket:", err)
+        return
     }
     fmt.Println("Successfully connected to Discord!")
 }
