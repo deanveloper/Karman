@@ -2,27 +2,21 @@ package main
 
 import (
     "fmt"
+    "github.com/aws/aws-sdk-go/aws"
     "github.com/aws/aws-sdk-go/aws/session"
     "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
     "os"
-    "github.com/aws/aws-sdk-go/aws"
 )
 
-type OurBot struct {
-    table *dynamo.Table
-}
+var table *dynamo.Table
 
 type User struct {
-    User string     `dynamo:"user"`
+    User  string     `dynamo:"user"`
     Karma int       `dynamo:"karma"`
 }
 
-func New() *OurBot {
-    return &OurBot{}
-}
-
-func (b *OurBot) Start() {
+func Start() {
     fmt.Println("Starting Karman...")
 
     // start DynamoDB session
@@ -32,10 +26,10 @@ func (b *OurBot) Start() {
         return
     }
     temp := dynamo.New(sess, aws.NewConfig().WithRegion("us-west-2")).Table("Karma")
-    b.table = &temp
+    table = &temp
 
     test := User{}
-    err = b.table.Get("user", "test").One(&test)
+    err = table.Get("user", "test").One(&test)
 
     if err != nil {
         fmt.Println("Error getting test value from DB:", err)
@@ -54,19 +48,15 @@ func (b *OurBot) Start() {
     }
 
     // start discord stuff
-    dg.AddHandler(b.ready)
-    dg.AddHandler(b.guildCreate)
-    dg.AddHandler(b.reactionAdd)
-    dg.AddHandler(b.reactionRemove)
-    dg.AddHandler(b.handleCommand)
+    dg.AddHandler(ready)
+    dg.AddHandler(guildCreate)
+    dg.AddHandler(reactionAdd)
+    dg.AddHandler(reactionRemove)
+    dg.AddHandler(handleCommand)
 
     err = dg.Open()
     if err != nil {
         fmt.Println("Error starting websocket:", err)
     }
     fmt.Println("Successfully connected to Discord!")
-}
-
-func (b *OurBot) Close() {
-
 }

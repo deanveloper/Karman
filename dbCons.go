@@ -5,9 +5,9 @@ import (
     "github.com/guregu/dynamo"
 )
 
-func (b *OurBot) plusOne(userId string) error {
+func plusOne(userId string) error {
     old := User{}
-    err := b.table.Put(User{userId, 1}).OldValue(old)
+    err := table.Put(User{userId, 1}).OldValue(old)
 
     // if no old value, we are done
     if err == dynamo.ErrNotFound {
@@ -17,13 +17,13 @@ func (b *OurBot) plusOne(userId string) error {
         return err
     }
 
-    err = b.table.Put(User{userId, old.Karma + 1}).Run()
+    err = table.Put(User{userId, old.Karma + 1}).Run()
     return err
 }
 
-func (b *OurBot) minusOne(userId string) error {
+func minusOne(userId string) error {
     old := User{}
-    err := b.table.Put(User{userId, -1}).OldValue(old)
+    err := table.Put(User{userId, -1}).OldValue(old)
 
     // if no old value, we are done
     if err == dynamo.ErrNotFound {
@@ -33,13 +33,13 @@ func (b *OurBot) minusOne(userId string) error {
         return err
     }
 
-    err = b.table.Put(User{userId, old.Karma - 1}).Run()
+    err = table.Put(User{userId, old.Karma - 1}).Run()
     return err
 }
 
-func (b *OurBot) getKarma(user *discordgo.User) (int, error) {
+func getKarma(user *discordgo.User) (int, error) {
     resp := User{}
-    err := b.table.Get("user", user.ID).One(resp)
+    err := table.Get("user", user.ID).One(resp)
 
     if err == dynamo.ErrNotFound {
         return 0, nil
