@@ -25,7 +25,7 @@ func New() *OurBot {
 func (b *OurBot) Start() {
 
     // start DynamoDB session
-    sess, err := session.NewSession(aws.NewConfig().WithRegion("us-west-2"))
+    sess, err := session.NewSession(aws.NewConfig().WithRegion("us-west-2").WithCredentialsChainVerboseErrors(true))
     if err != nil {
         fmt.Println("Error connecting to DB:", err)
         return
