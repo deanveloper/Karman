@@ -9,6 +9,7 @@ import (
     "io/ioutil"
     "os"
     "path"
+    "net/url"
 )
 
 var table *dynamo.Table
@@ -53,6 +54,8 @@ func Start() {
         fmt.Println("Error creating session!", err)
         return
     }
+
+    fmt.Println(url.QueryEscape(string(dat)))
 
     // start discord stuff
     dg.AddHandler(ready)
