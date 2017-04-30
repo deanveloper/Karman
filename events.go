@@ -1,4 +1,4 @@
-package karman
+package main
 
 import (
     "fmt"
