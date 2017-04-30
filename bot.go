@@ -7,6 +7,7 @@ import (
     "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
     "os"
+    "github.com/aws/aws-sdk-go/aws/credentials"
 )
 
 type OurBot struct {
@@ -25,7 +26,7 @@ func New() *OurBot {
 func (b *OurBot) Start() {
 
     // start DynamoDB session
-    sess, err := session.NewSession(aws.NewConfig().WithRegion("us-west-2").WithCredentialsChainVerboseErrors(true))
+    sess, err := session.NewSession()
     if err != nil {
         fmt.Println("Error connecting to DB:", err)
         return
