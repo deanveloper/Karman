@@ -21,8 +21,6 @@ func guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
 }
 
 func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
-    s.ChannelMessageSend(ev.ChannelID, "ayyyyy aws")
-    fmt.Println("test")
     if strings.HasPrefix(strings.ToLower(ev.Content), "!karma") {
         if ev.MentionEveryone {
             s.ChannelMessageSend(ev.ChannelID, "Getting everyone's karma is not allowed.")
