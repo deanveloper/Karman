@@ -7,7 +7,7 @@ import (
 
 func plusOne(userId string) error {
     old := User{}
-    err := table.Put(User{userId, 1}).OldValue(old)
+    err := table.Put(User{userId, 1}).OldValue(&old)
 
     // if no old value, we are done
     if err == dynamo.ErrNotFound {
@@ -23,7 +23,7 @@ func plusOne(userId string) error {
 
 func minusOne(userId string) error {
     old := User{}
-    err := table.Put(User{userId, -1}).OldValue(old)
+    err := table.Put(User{userId, -1}).OldValue(&old)
 
     // if no old value, we are done
     if err == dynamo.ErrNotFound {
@@ -39,7 +39,7 @@ func minusOne(userId string) error {
 
 func getKarma(user *discordgo.User) (int, error) {
     resp := User{}
-    err := table.Get("user", user.ID).One(resp)
+    err := table.Get("user", user.ID).One(&resp)
 
     if err == dynamo.ErrNotFound {
         return 0, nil
