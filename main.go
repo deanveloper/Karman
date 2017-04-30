@@ -7,7 +7,7 @@ import (
 func main() {
     Start()
 
-    fmt.Println("Successfully started! When done, press CTRL-C to exit.")
+    fmt.Println("When done, press CTRL-C to exit.")
     <-make(chan struct{})
     return
 }
