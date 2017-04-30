@@ -56,7 +56,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
             for _, user := range mentions {
                 // get each one asynchronously
                 go func() {
-                    karma, err := getKarma(mentions[0])
+                    karma, err := getKarma(user)
 
                     if err != nil {
                         fmt.Println("Error getting karma for", user.Username, ":", err)
