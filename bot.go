@@ -9,7 +9,6 @@ import (
     "io/ioutil"
     "os"
     "path"
-    "net/url"
 )
 
 var table *dynamo.Table
