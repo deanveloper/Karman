@@ -54,15 +54,18 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
 
         } else { // if multiple people were mentioned
             for _, user := range mentions {
-                karma, err := getKarma(user)
+                // get each one asynchronously
+                go func(user *discordgo.User) {
+                    karma, err := getKarma(user)
 
-                if err != nil {
-                    fmt.Println("Error getting karma for", user.Username, ":", err)
-                    s.ChannelMessageSend(ev.ChannelID, "Error getting karma for "+user.Username+": `"+err.Error()+"`")
-                    return
-                }
+                    if err != nil {
+                        fmt.Println("Error getting karma for", user.Username, ":", err)
+                        s.ChannelMessageSend(ev.ChannelID, "Error getting karma for "+user.Username+": `"+err.Error()+"`")
+                        return
+                    }
 
-                s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
+                    s.ChannelMessageSend(ev.ChannelID, fmt.Sprintf("**%s** has **%d** karma", user.Username, karma))
+                }(user)
             }
         }
     }
