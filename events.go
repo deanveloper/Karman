@@ -80,9 +80,13 @@ func reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
         }
 
         if ev.Emoji.Name == "⬆" { // up
-            plusOne(msg.Author.ID)
+            err = plusOne(msg.Author.ID)
         } else if ev.Emoji.Name == "⬇" { // down
-            minusOne(msg.Author.ID)
+            err = minusOne(msg.Author.ID)
+        }
+        if err != nil {
+            fmt.Println("Error changing karma for", msg.Author.Username, ":", err)
+            return
         }
     }
 }
@@ -96,9 +100,13 @@ func reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
         }
 
         if ev.Emoji.Name == "⬇" { // down
-            plusOne(msg.Author.ID)
+            err = plusOne(msg.Author.ID)
         } else if ev.Emoji.Name == "⬆" { // up
-            minusOne(msg.Author.ID)
+            err = minusOne(msg.Author.ID)
+        }
+        if err != nil {
+            fmt.Println("Error changing karma for", msg.Author.Username, ":", err)
+            return
         }
     }
 }
