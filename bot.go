@@ -6,7 +6,7 @@ import (
     "github.com/aws/aws-sdk-go/aws/session"
     "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
-    "os"
+    "io/ioutil"
 )
 
 var table *dynamo.Table
@@ -41,7 +41,12 @@ func Start() {
     }
     fmt.Println("Successfully connected to DynamoDB!")
 
-    dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
+    dat, err := ioutil.ReadFile("~/KARMAN_SECRET")
+    if err != nil {
+        fmt.Println("Error reading secret key!", err)
+        return
+    }
+    dg, err := discordgo.New("Bot " + string(dat))
     if err != nil {
         fmt.Println("Error creating session!", err)
         return
