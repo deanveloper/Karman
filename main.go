@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-    New().Start()
+    Start()
 
     // keep bots running until force closed
     sigChan := make(chan os.Signal)

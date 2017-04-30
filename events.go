@@ -4,7 +4,6 @@ import (
     "fmt"
     "github.com/bwmarrin/discordgo"
     "strings"
-    "golang.org/x/tools/go/gcimporter15/testdata"
 )
 
 func ready(s *discordgo.Session, ev *discordgo.Ready) {
