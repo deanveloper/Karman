@@ -2,11 +2,11 @@ package main
 
 import (
     "fmt"
+    "github.com/aws/aws-sdk-go/aws"
     "github.com/aws/aws-sdk-go/aws/session"
     "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
     "os"
-    "github.com/aws/aws-sdk-go/aws"
 )
 
 type OurBot struct {
