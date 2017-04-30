@@ -26,12 +26,12 @@ func (b *OurBot) Start() {
     fmt.Println("Starting Karman...")
 
     // start DynamoDB session
-    sess, err := session.NewSession(aws.NewConfig().WithRegion("us-west-2"))
+    sess, err := session.NewSession()
     if err != nil {
         fmt.Println("Error connecting to DB:", err)
         return
     }
-    temp := dynamo.New(sess).Table("Karma")
+    temp := dynamo.New(sess, aws.NewConfig().WithRegion("us-west-2")).Table("Karma")
     b.table = &temp
 
     test := User{}
