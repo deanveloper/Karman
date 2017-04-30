@@ -22,6 +22,7 @@ func New() *OurBot {
 }
 
 func (b *OurBot) Start() {
+    fmt.Println("Starting Karman...")
 
     // start DynamoDB session
     sess, err := session.NewSession()
@@ -43,7 +44,6 @@ func (b *OurBot) Start() {
         fmt.Println("Test test's Karma was not 1337! Instead was", test.Karma)
         return
     }
-
     fmt.Println("Successfully connected to DynamoDB!")
 
     dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
