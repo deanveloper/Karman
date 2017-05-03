@@ -1,7 +1,6 @@
 package karman
 
 import (
-    "fmt"
     "github.com/aws/aws-sdk-go/aws"
     "github.com/aws/aws-sdk-go/aws/session"
     "github.com/bwmarrin/discordgo"
@@ -29,12 +28,12 @@ func New(log *log.Logger) *Karman {
 }
 
 func (b *Karman) Start() {
-    fmt.Println("Starting Karman...")
+    b.log.Println("Starting Karman...")
 
     // start DynamoDB session
     sess, err := session.NewSession()
     if err != nil {
-        fmt.Println("Error connecting to DB:", err)
+        b.log.Println("Error connecting to DB:", err)
         return
     }
     b.con = dynamo.New(sess, aws.NewConfig().WithRegion("us-west-2"))
@@ -45,23 +44,23 @@ func (b *Karman) Start() {
     err = b.table.Get("user", "test").One(&test)
 
     if err != nil {
-        fmt.Println("Error getting test value from DB:", err)
+        b.log.Println("Error getting test value from DB:", err)
         return
     }
     if test.Karma != 1337 {
-        fmt.Println("Test test's Karma was not 1337! Instead was", test.Karma)
+        b.log.Println("Test test's Karma was not 1337! Instead was", test.Karma)
         return
     }
-    fmt.Println("Successfully connected to DynamoDB!")
+    b.log.Println("Successfully connected to DynamoDB!")
 
     dat, err := ioutil.ReadFile(path.Join(os.Getenv("HOME"), "KARMAN_SECRET"))
     if err != nil {
-        fmt.Println("Error reading secret key!", err)
+        b.log.Println("Error reading secret key!", err)
         return
     }
     dg, err := discordgo.New("Bot " + string(dat))
     if err != nil {
-        fmt.Println("Error creating session!", err)
+        b.log.Println("Error creating session!", err)
         return
     }
 
@@ -74,11 +73,11 @@ func (b *Karman) Start() {
 
     err = dg.Open()
     if err != nil {
-        fmt.Println("Error starting websocket:", err)
+        b.log.Println("Error starting websocket:", err)
         return
     }
     b.dg = dg
-    fmt.Println("Successfully connected to Discord!")
+    b.log.Println("Successfully connected to Discord!")
 }
 
 func (b *Karman) Stop() {

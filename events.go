@@ -4,20 +4,19 @@ import (
     "fmt"
     "github.com/bwmarrin/discordgo"
     "strings"
-    "golang.org/x/tools/go/gcimporter15/testdata"
 )
 
 func (b *Karman) ready(s *discordgo.Session, ev *discordgo.Ready) {
     err := s.UpdateStatus(0, "Karma Counter")
     if err != nil {
-        fmt.Println("Error while readying:", err)
+        b.log.Println("Error while readying:", err)
     }
 }
 
 func (b *Karman) guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
     _, err := s.Request("PATCH", discordgo.EndpointGuildMembers(ev.ID)+"/@me/nick", struct{ nick string }{"Karman"})
     if err != nil {
-        fmt.Println("Error while joining guild "+ev.Name+":", err)
+        b.log.Println("Error while joining guild "+ev.Name+":", err)
     }
 }
 
@@ -34,7 +33,7 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
             if len(mentions) == 0 { // if someone was mentioned
                 karma, err := b.getKarma(ev.Author)
                 if err != nil {
-                    fmt.Println("Error getting karma:", err)
+                    b.log.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
                     return
                 }
@@ -45,7 +44,7 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
                 user := mentions[0]
                 karma, err := b.getKarma(mentions[0])
                 if err != nil {
-                    fmt.Println("Error getting karma:", err)
+                    b.log.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
                     return
                 }
@@ -60,7 +59,7 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
                     karma, err := b.getKarma(user)
 
                     if err != nil {
-                        fmt.Println("Error getting karma for", user.Username, ":", err)
+                        b.log.Println("Error getting karma for", user.Username, ":", err)
                         s.ChannelMessageSend(ev.ChannelID, "Error getting karma for "+user.Username+": `"+err.Error()+"`")
                         return
                     }
