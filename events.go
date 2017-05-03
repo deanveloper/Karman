@@ -1,26 +1,27 @@
-package main
+package karman
 
 import (
     "fmt"
     "github.com/bwmarrin/discordgo"
     "strings"
+    "golang.org/x/tools/go/gcimporter15/testdata"
 )
 
-func ready(s *discordgo.Session, ev *discordgo.Ready) {
+func (b *Karman) ready(s *discordgo.Session, ev *discordgo.Ready) {
     err := s.UpdateStatus(0, "Karma Counter")
     if err != nil {
         fmt.Println("Error while readying:", err)
     }
 }
 
-func guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
+func (b *Karman) guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
     _, err := s.Request("PATCH", discordgo.EndpointGuildMembers(ev.ID)+"/@me/nick", struct{ nick string }{"Karman"})
     if err != nil {
         fmt.Println("Error while joining guild "+ev.Name+":", err)
     }
 }
 
-func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
+func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
     if strings.HasPrefix(strings.ToLower(ev.Content), "!karma") {
         if ev.MentionEveryone {
             s.ChannelMessageSend(ev.ChannelID, "Getting everyone's karma is not allowed.")
@@ -31,7 +32,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
 
         if len(mentions) < 2 {
             if len(mentions) == 0 { // if someone was mentioned
-                karma, err := getKarma(ev.Author)
+                karma, err := b.getKarma(ev.Author)
                 if err != nil {
                     fmt.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
@@ -42,7 +43,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
 
             } else {
                 user := mentions[0]
-                karma, err := getKarma(mentions[0])
+                karma, err := b.getKarma(mentions[0])
                 if err != nil {
                     fmt.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
@@ -56,7 +57,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
             for _, user := range mentions {
                 // get each one asynchronously
                 go func(user *discordgo.User) {
-                    karma, err := getKarma(user)
+                    karma, err := b.getKarma(user)
 
                     if err != nil {
                         fmt.Println("Error getting karma for", user.Username, ":", err)
@@ -71,7 +72,7 @@ func handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
     }
 }
 
-func reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
+func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
@@ -80,9 +81,9 @@ func reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
         }
 
         if ev.Emoji.Name == "⬆" { // up
-            err = plusOne(msg.Author.ID)
+            err = b.plusOne(msg.Author.ID)
         } else if ev.Emoji.Name == "⬇" { // down
-            err = minusOne(msg.Author.ID)
+            err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
             fmt.Println("Error changing karma for", msg.Author.Username, ":", err)
@@ -91,7 +92,7 @@ func reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
     }
 }
 
-func reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
+func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
@@ -100,9 +101,9 @@ func reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
         }
 
         if ev.Emoji.Name == "⬇" { // down
-            err = plusOne(msg.Author.ID)
+            err = b.plusOne(msg.Author.ID)
         } else if ev.Emoji.Name == "⬆" { // up
-            err = minusOne(msg.Author.ID)
+            err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
             fmt.Println("Error changing karma for", msg.Author.Username, ":", err)

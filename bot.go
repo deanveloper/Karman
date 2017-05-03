@@ -1,4 +1,4 @@
-package main
+package karman
 
 import (
     "fmt"
@@ -7,18 +7,28 @@ import (
     "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
     "io/ioutil"
+    "log"
     "os"
     "path"
 )
-
-var table *dynamo.Table
 
 type User struct {
     User  string     `dynamo:"user"`
     Karma int       `dynamo:"karma"`
 }
 
-func Start() {
+type Karman struct {
+    con   *dynamo.DB
+    table *dynamo.Table
+    dg    *discordgo.Session
+    log   *log.Logger
+}
+
+func New(log *log.Logger) *Karman {
+    return &Karman{log: log}
+}
+
+func (b *Karman) Start() {
     fmt.Println("Starting Karman...")
 
     // start DynamoDB session
@@ -27,11 +37,12 @@ func Start() {
         fmt.Println("Error connecting to DB:", err)
         return
     }
-    temp := dynamo.New(sess, aws.NewConfig().WithRegion("us-west-2")).Table("Karma")
-    table = &temp
+    b.con = dynamo.New(sess, aws.NewConfig().WithRegion("us-west-2"))
+    temp := b.con.Table("Karma")
+    b.table = &temp
 
     test := User{}
-    err = table.Get("user", "test").One(&test)
+    err = b.table.Get("user", "test").One(&test)
 
     if err != nil {
         fmt.Println("Error getting test value from DB:", err)
@@ -55,16 +66,22 @@ func Start() {
     }
 
     // start discord stuff
-    dg.AddHandler(ready)
-    dg.AddHandler(guildCreate)
-    dg.AddHandler(reactionAdd)
-    dg.AddHandler(reactionRemove)
-    dg.AddHandler(handleCommand)
+    dg.AddHandler(b.ready)
+    dg.AddHandler(b.guildCreate)
+    dg.AddHandler(b.reactionAdd)
+    dg.AddHandler(b.reactionRemove)
+    dg.AddHandler(b.handleCommand)
 
     err = dg.Open()
     if err != nil {
         fmt.Println("Error starting websocket:", err)
         return
     }
+    b.dg = dg
     fmt.Println("Successfully connected to Discord!")
+}
+
+func (b *Karman) Stop() {
+    // DB Connection automatically closes?
+    b.dg.Close()
 }
