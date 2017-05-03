@@ -10,6 +10,8 @@ func (b *Karman) ready(s *discordgo.Session, ev *discordgo.Ready) {
     err := s.UpdateStatus(0, "Karma Counter")
     if err != nil {
         b.log.Println("Error while readying:", err)
+    } else {
+        b.log.Println("I'm ready to count some karma!")
     }
 }
 
