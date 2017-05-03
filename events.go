@@ -15,13 +15,6 @@ func (b *Karman) ready(s *discordgo.Session, ev *discordgo.Ready) {
     }
 }
 
-func (b *Karman) guildCreate(s *discordgo.Session, ev *discordgo.GuildCreate) {
-    _, err := s.Request("PATCH", discordgo.EndpointGuildMembers(ev.ID)+"/@me/nick", struct{ nick string }{"Karman"})
-    if err != nil {
-        b.log.Println("Error while joining guild "+ev.Name+":", err)
-    }
-}
-
 func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
     if strings.HasPrefix(strings.ToLower(ev.Content), "!karma") {
         if ev.MentionEveryone {
