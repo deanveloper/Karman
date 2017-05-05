@@ -26,7 +26,7 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
 
         if len(mentions) < 2 {
             if len(mentions) == 0 { // if someone was mentioned
-                karma, err := b.getKarma(ev.Author)
+                karma, err := b.getKarma(ev.Author.ID)
                 if err != nil {
                     b.log.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
@@ -37,7 +37,7 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
 
             } else {
                 user := mentions[0]
-                karma, err := b.getKarma(mentions[0])
+                karma, err := b.getKarma(mentions[0].ID)
                 if err != nil {
                     b.log.Println("Error getting karma:", err)
                     s.ChannelMessageSend(ev.ChannelID, "Error getting karma: `"+err.Error()+"`")
@@ -51,7 +51,7 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
             for _, user := range mentions {
                 // get each one asynchronously
                 go func(user *discordgo.User) {
-                    karma, err := b.getKarma(user)
+                    karma, err := b.getKarma(user.ID)
 
                     if err != nil {
                         b.log.Println("Error getting karma for", user.Username, ":", err)
