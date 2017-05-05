@@ -66,7 +66,6 @@ func (b *Karman) Start() {
 
     // start discord stuff
     dg.AddHandler(b.ready)
-    dg.AddHandler(b.guildCreate)
     dg.AddHandler(b.reactionAdd)
     dg.AddHandler(b.reactionRemove)
     dg.AddHandler(b.handleCommand)
