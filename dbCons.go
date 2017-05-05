@@ -1,7 +1,6 @@
 package karman
 
 import (
-    "github.com/bwmarrin/discordgo"
     "github.com/guregu/dynamo"
 )
 
@@ -37,9 +36,9 @@ func (b *Karman) minusOne(userId string) error {
     return err
 }
 
-func (b *Karman) getKarma(user *discordgo.User) (int, error) {
+func (b *Karman) getKarma(userId string) (int, error) {
     resp := User{}
-    err := b.table.Get("user", user.ID).One(&resp)
+    err := b.table.Get("user", userId).One(&resp)
 
     if err == dynamo.ErrNotFound {
         return 0, nil
