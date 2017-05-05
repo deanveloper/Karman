@@ -26,6 +26,8 @@ func (b *Karman) Command(args []string) {
                 }
                 b.log.Println("Karma:", karma)
             }
+        default:
+            b.log.Println("Command unknown:", args[0])
         }
     }
 }
