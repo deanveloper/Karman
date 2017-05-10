@@ -7,8 +7,8 @@ import (
 )
 
 const (
-    UPVOTE string = "thumbs_up"
-    DOWNVOTE string = "thumbs_down"
+    UPVOTE string = "👍"
+    DOWNVOTE string = "👎"
 )
 
 var morelogs = false
@@ -79,7 +79,7 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
 
 func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
     if morelogs {
-        b.log.Printf("Add Emoji: %v\n", ev.Emoji)
+        b.log.Printf("Add Emoji: %+v\n", ev.Emoji)
     }
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
@@ -102,7 +102,7 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
 
 func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
     if morelogs {
-        b.log.Printf("Remove Emoji: %v\n", ev.Emoji)
+        b.log.Printf("Remove Emoji: %+v\n", ev.Emoji)
     }
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
