@@ -70,7 +70,7 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
-            fmt.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
+            b.log.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
             return
         }
 
@@ -80,7 +80,7 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
             err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
-            fmt.Println("Error changing karma for", msg.Author.Username, ":", err)
+            b.log.Println("Error changing karma for", msg.Author.Username, ":", err)
             return
         }
     }
@@ -90,7 +90,7 @@ func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReact
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
-            fmt.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
+            b.log.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
             return
         }
 
@@ -100,7 +100,7 @@ func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReact
             err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
-            fmt.Println("Error changing karma for", msg.Author.Username, ":", err)
+            b.log.Println("Error changing karma for", msg.Author.Username, ":", err)
             return
         }
     }
