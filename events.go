@@ -78,6 +78,9 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
 }
 
 func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
+    if morelogs {
+        b.log.Printf("Add Emoji: %v\n", ev.Emoji)
+    }
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
@@ -99,7 +102,7 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
 
 func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
     if morelogs {
-        b.log.Printf("Emoji: %v", ev.Emoji)
+        b.log.Printf("Remove Emoji: %v\n", ev.Emoji)
     }
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
