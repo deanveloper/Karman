@@ -6,6 +6,13 @@ import (
     "strings"
 )
 
+const (
+    UPVOTE string = "thumbs_up"
+    DOWNVOTE string = "thumbs_down"
+)
+
+var morelogs = false
+
 func (b *Karman) ready(s *discordgo.Session, ev *discordgo.Ready) {
     err := s.UpdateStatus(0, "Karma Counter")
     if err != nil {
@@ -16,6 +23,10 @@ func (b *Karman) ready(s *discordgo.Session, ev *discordgo.Ready) {
 }
 
 func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate) {
+    if ev.Content == "!togglemorelogs" && ev.Author.ID == "181478126990262272" {
+        s.ChannelMessageSend(ev.ChannelID, "Toggled advanced logging!")
+        morelogs = !morelogs
+    }
     if strings.HasPrefix(strings.ToLower(ev.Content), "!karma") {
         if ev.MentionEveryone {
             s.ChannelMessageSend(ev.ChannelID, "Getting everyone's karma is not allowed.")
@@ -87,6 +98,9 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
 }
 
 func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
+    if morelogs {
+        b.log.Printf("Emoji: %v", ev.Emoji)
+    }
     if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
