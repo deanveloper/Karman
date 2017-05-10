@@ -81,16 +81,16 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
     if morelogs {
         b.log.Printf("Add Emoji: %+v\n", ev.Emoji)
     }
-    if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
+    if ev.Emoji.Name == UPVOTE || ev.Emoji.Name == DOWNVOTE { // up or down
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
             b.log.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
             return
         }
 
-        if ev.Emoji.Name == "⬆" { // up
+        if ev.Emoji.Name == UPVOTE {
             err = b.plusOne(msg.Author.ID)
-        } else if ev.Emoji.Name == "⬇" { // down
+        } else if ev.Emoji.Name == DOWNVOTE {
             err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
@@ -104,16 +104,16 @@ func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReact
     if morelogs {
         b.log.Printf("Remove Emoji: %+v\n", ev.Emoji)
     }
-    if ev.Emoji.APIName() == "⬆" || ev.Emoji.APIName() == "⬇" { // up or down
+    if ev.Emoji.Name == UPVOTE || ev.Emoji.Name == DOWNVOTE {
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
             b.log.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
             return
         }
 
-        if ev.Emoji.Name == "⬇" { // down
+        if ev.Emoji.Name == DOWNVOTE {
             err = b.plusOne(msg.Author.ID)
-        } else if ev.Emoji.Name == "⬆" { // up
+        } else if ev.Emoji.Name == UPVOTE {
             err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
