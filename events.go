@@ -3,12 +3,13 @@ package karman
 import (
     "fmt"
     "github.com/bwmarrin/discordgo"
+    "github.com/wangii/emoji"
     "strings"
 )
 
-const (
-    UPVOTE string = "👍"
-    DOWNVOTE string = "👎"
+var (
+    UPVOTE = []string { ":+1:", ":thumbsup:" }
+    DOWNVOTE = []string { ":-1:", ":thumbsdown:" }
 )
 
 var morelogs = false
@@ -81,16 +82,21 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
     if morelogs {
         b.log.Printf("Add Emoji: %+v\n", ev.Emoji)
     }
-    if ev.Emoji.Name == UPVOTE || ev.Emoji.Name == DOWNVOTE { // up or down
+
+    tag := emoji.UnicodeToEmojiTag(ev.Emoji.Name)
+    isUpvote := contains(UPVOTE, tag)
+    isDownvote := contains(DOWNVOTE, tag)
+
+    if isUpvote || isDownvote {
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
             b.log.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
             return
         }
 
-        if ev.Emoji.Name == UPVOTE {
+        if isUpvote {
             err = b.plusOne(msg.Author.ID)
-        } else if ev.Emoji.Name == DOWNVOTE {
+        } else if isDownvote {
             err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
@@ -104,16 +110,21 @@ func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReact
     if morelogs {
         b.log.Printf("Remove Emoji: %+v\n", ev.Emoji)
     }
-    if ev.Emoji.Name == UPVOTE || ev.Emoji.Name == DOWNVOTE {
+
+    tag := emoji.UnicodeToEmojiTag(ev.Emoji.Name)
+    isUpvote := contains(UPVOTE, tag)
+    isDownvote := contains(DOWNVOTE, tag)
+
+    if isUpvote || isDownvote {
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
         if err != nil {
             b.log.Println("Error getting message", ev.MessageID, "for channel", ev.ChannelID, err)
             return
         }
 
-        if ev.Emoji.Name == DOWNVOTE {
+        if isDownvote {
             err = b.plusOne(msg.Author.ID)
-        } else if ev.Emoji.Name == UPVOTE {
+        } else if isUpvote {
             err = b.minusOne(msg.Author.ID)
         }
         if err != nil {
@@ -121,4 +132,13 @@ func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReact
             return
         }
     }
+}
+
+func contains(in []string, s string) bool {
+    for _, s1 := range in {
+        if s == s1 {
+            return true
+        }
+    }
+    return false
 }
