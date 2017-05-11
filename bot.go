@@ -53,7 +53,7 @@ func (b *Karman) Start() {
     }
     b.log.Println("Successfully connected to DynamoDB!")
 
-    dat, err := ioutil.ReadFile(path.Join(os.Getenv("HOME"), "karman", "SECRET"))
+    dat, err := ioutil.ReadFile(path.Join(os.Getenv("HOME"), "botfiles", "karman", "SECRET"))
     if err != nil {
         b.log.Println("Error reading secret key!", err)
         return
