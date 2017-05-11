@@ -79,13 +79,15 @@ func (b *Karman) handleCommand(s *discordgo.Session, ev *discordgo.MessageCreate
 }
 
 func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReactionAdd) {
-    if morelogs {
-        b.log.Printf("Add Emoji: %+v\n", ev.Emoji)
-    }
 
     tag := emoji.UnicodeToEmojiTag(ev.Emoji.Name)
     isUpvote := contains(UPVOTE, tag)
     isDownvote := contains(DOWNVOTE, tag)
+
+    if morelogs {
+        b.log.Printf("Add Emoji: %+v\n", ev.Emoji)
+        b.log.Println("Above Emoji Code:", tag)
+    }
 
     if isUpvote || isDownvote {
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
@@ -107,13 +109,15 @@ func (b *Karman) reactionAdd(s *discordgo.Session, ev *discordgo.MessageReaction
 }
 
 func (b *Karman) reactionRemove(s *discordgo.Session, ev *discordgo.MessageReactionRemove) {
-    if morelogs {
-        b.log.Printf("Remove Emoji: %+v\n", ev.Emoji)
-    }
 
     tag := emoji.UnicodeToEmojiTag(ev.Emoji.Name)
     isUpvote := contains(UPVOTE, tag)
     isDownvote := contains(DOWNVOTE, tag)
+
+    if morelogs {
+        b.log.Printf("Remove Emoji: %+v\n", ev.Emoji)
+        b.log.Println("Above Emoji Code:", tag)
+    }
 
     if isUpvote || isDownvote {
         msg, err := s.ChannelMessage(ev.ChannelID, ev.MessageID)
